@@ -1,3 +1,11 @@
+/**
+Description: The wordcloud class contains the tools to extract textual information (using JSoup) from a fixed URL,
+ calculate the word frequencies from the text, generate a wordcloud with a fixed mask and
+ ask the user where the save the wordcloud.
+ @author Robert Musters
+ @since 2019-06-31
+ */
+
 import com.kennycason.kumo.nlp.FrequencyAnalyzer;
 import com.kennycason.kumo.*;
 import com.kennycason.kumo.palette.ColorPalette;
@@ -18,8 +26,12 @@ import org.jsoup.Jsoup;
 import java.util.logging.Logger;
 import java.util.logging.*;
 
-// TODO: put frequency analyzer, wordcloud and file I/O in seperate classes
-// TODO: maybe make my own freqyency analyzer?
+// TODO: put frequency analyzer, wordcloud and file I/O in separate classes, for example create a separate class
+//  for user input and output.
+// TODO: maybe make my own frequency analyzer?
+// TODO: write test cases, for example by mocking getWebPageText
+// TODO: maybe ask user for url?
+// TODO: fix possible bug for wordcloud showing up in the left corner
 public class MyWordCloud {
 
     private static Logger logger = Logger.getLogger(MyWordCloud.class.getName());
@@ -65,14 +77,15 @@ public class MyWordCloud {
         Document doc = null;
         try{
             doc = Jsoup.connect("https://en.wikipedia.org/wiki/Big_data").get();
-        } catch(java.io.IOException ex){
-            logger.log(Level.INFO, "Webpage could not be read.");
+        } catch(java.io.IOException ex) {
+            logger.log(Level.INFO, "Webpage could not be read, do you have internet connectivity?");
+            System.exit(0);
         }
         String text = doc.body().text();
         return text;
     }
 
-
+    // TODO: calculate my own wordfrequencies? Perhaps with Spark if the amount of words becomes very large?
     public static List<WordFrequency> getWordFrequencies(String text, List<WordFrequency> wordFrequencies, FrequencyAnalyzer frequencyAnalyzer){
         logger.log(Level.INFO, "Calculating word frequencies.");
         try{
@@ -118,7 +131,7 @@ public class MyWordCloud {
         URL res;
         res = MyWordCloud.class.getResource("mask.png");
         try{
-            //TODO fix file
+            //TODO fix file warning from IntelliJ
             file = Paths.get(res.toURI()).toFile();
         } catch(java.net.URISyntaxException ex){
             logger.log(Level.SEVERE, "URI could not be read.");
