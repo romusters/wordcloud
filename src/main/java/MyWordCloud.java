@@ -56,10 +56,10 @@ public class MyWordCloud {
         generateWordCloud(wordCloud, wordFrequencies);
     }
 
-
+    // TODO: investigate min and max wordfrequency functions for wordcloud optimization.
     public static FrequencyAnalyzer initFrequencyAnalyzer(FrequencyAnalyzer frequencyAnalyzer){
         frequencyAnalyzer.setWordFrequenciesToReturn(300);
-        frequencyAnalyzer.setMinWordLength(0);
+        frequencyAnalyzer.setMinWordLength(2);
         return frequencyAnalyzer;
     }
 
