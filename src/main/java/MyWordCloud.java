@@ -13,6 +13,7 @@ import com.kennycason.kumo.bg.PixelBoundryBackground;
 import com.kennycason.kumo.font.scale.LinearFontScalar;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.awt.*;
 import java.io.*;
@@ -37,7 +38,7 @@ public class MyWordCloud {
     private static Logger logger = Logger.getLogger(MyWordCloud.class.getName());
 
     public static void main(String[] args) {
-        String text;
+        String text = null;
         List<WordFrequency> wordFrequencies = new ArrayList<WordFrequency>();
         final Dimension dimension = new Dimension(500, 312);
         FrequencyAnalyzer frequencyAnalyzer = new FrequencyAnalyzer();
@@ -47,8 +48,12 @@ public class MyWordCloud {
         wordCloud = initWordCloud(wordCloud);
 
         // Get webpage data.
-        text = getWebpageText();
+        //text = getWebpageText();
+        MyWebCrawler myWebCrawler = new MyWebCrawler();
+        logger.log(Level.INFO, "Scanning page links.");
+        myWebCrawler.getPageLinks("https://en.wikipedia.org/wiki/Big_data", 1, 0);
 
+        text = getTextAllLinks(myWebCrawler.links);
         // Determine the frequency of the words
         wordFrequencies = getWordFrequencies(text, wordFrequencies, frequencyAnalyzer);
 
@@ -72,11 +77,11 @@ public class MyWordCloud {
     }
 
 
-    public static String getWebpageText(){
+    public static String getWebpageText(String link){
         logger.log(Level.INFO,"Getting webpage data.");
         Document doc = null;
         try{
-            doc = Jsoup.connect("https://en.wikipedia.org/wiki/Big_data").get();
+            doc = Jsoup.connect(link).get();
         } catch(java.io.IOException ex) {
             logger.log(Level.INFO, "Webpage could not be read, do you have internet connectivity?");
             System.exit(0);
@@ -137,6 +142,16 @@ public class MyWordCloud {
             logger.log(Level.SEVERE, "URI could not be read.");
         }
         return file;
+    }
+
+    public static String getTextAllLinks(HashSet<String> links){
+        List<String> textCollection = new ArrayList();
+
+        for (String link :  links){
+            textCollection.add(getWebpageText(link));
+        }
+        String joinedTextCollection = String.join(" ", textCollection);
+        return joinedTextCollection;
     }
 
 }
